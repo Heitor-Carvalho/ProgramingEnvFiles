@@ -1,0 +1,51 @@
+[user]
+	name = Heitor Silva Carvalho
+	email = <mail-here>
+[color]
+	diff = auto
+	status = auto
+	branch = auto
+	interactive = auto
+	ui = true
+	pager = true
+[push]
+	default = matching
+[branch]
+	autosetuprebase = always
+[credential]
+	helper = store
+[http]
+	sslVerify = false
+[gerrit]
+	createchangeid = true
+[jira]
+	createjiraid = true
+[alias]
+  st = status
+  ci = commit
+  co = checkout
+  mg = merge --no-ff
+  df = diff
+  dc = diff --cached
+  lg = log --graph --pretty=format:'%Cred%h%Creset -%C(red)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --all --decorate
+  lgst = log --graph --pretty=format:'%Cred%h%Creset -%C(red)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --all --decorate --stat
+  lgbr = log --graph --pretty=format:'%Cred%h%Creset -%C(red)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --decorate
+  ls = ls-files
+  unadd = reset HEAD --
+  unstage = reset HEAD --
+  ign = ls-files -o -i --exclude-standard
+  sh = stash
+  track = branch --set-upstream-to
+  br = !git branch -avv && git tag -n
+  in = !git fetch && git fetch --tags && echo 'From: origin/\\n' && git lgbr ..@{u}
+  out = !echo 'To: origin/\\n' && git lgbr @{u}..
+  inout = !git in && git out
+  sh-unapply = !git stash show -p | git apply -R
+  stash-unapply = !git stash show -p | git apply -R
+  jf = !git jfr
+  diffv = difftool -t vimdiff
+  diffm = difftool -t meld
+[core]
+	editor = vim
+[merge]
+	tool = vimdiff

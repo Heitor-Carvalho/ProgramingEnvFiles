@@ -19,3 +19,7 @@
  ```
  apt-get install urlview
  ```
+
+### Setting up gitconfig file
+ * Download the gitconfig file and move to .gitconfig
+ * Change the name and email
