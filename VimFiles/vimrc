@@ -101,20 +101,6 @@ set list
 set undofile "Persistent undo
 set clipboard=unnamedplus "Copy to clipboard
 
-"" ===> Color related commands
-" highlight search configuration
-hi Search ctermbg=LightYellow
-hi Search ctermfg=Red
-" configure vimdiff colors
-highlight DiffAdd cterm=none ctermfg=green ctermbg=black
-highlight DiffDelete cterm=none ctermfg=red ctermbg=black
-highlight DiffChange cterm=none ctermfg=none ctermbg=black
-highlight DiffText cterm=none ctermfg=Yellow ctermbg=black
-"  tagbar configuration
-highlight TagbarSignature guifg=Green ctermfg=Green
-" match pattern color
-highlight MatchParen ctermfg=blue
-
 "" ===> Movements related commands
 " change move panes mapping
 nnoremap <C-J> <C-W><C-J>
@@ -231,3 +217,18 @@ let python_highlight_all=1
 
 " source vim cscope maps
 source ~/.vim/cscope_maps.vim
+
+"" ===> Color related commands
+" highlight search configuration
+hi Search ctermbg=LightYellow
+hi Search ctermfg=Red
+" configure vimdiff colors
+highlight DiffAdd cterm=none ctermfg=green ctermbg=black
+highlight DiffDelete cterm=none ctermfg=red ctermbg=black
+highlight DiffChange cterm=none ctermfg=none ctermbg=black
+highlight DiffText cterm=none ctermfg=Yellow ctermbg=black
+"  tagbar configuration
+highlight TagbarSignature guifg=Green ctermfg=Green
+" match pattern color
+highlight MatchParen ctermfg=blue
+
