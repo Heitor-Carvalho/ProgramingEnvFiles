@@ -1,5 +1,7 @@
 # Programming environment file
 
+This repo contains all my environment configuration files used to development.
+
 ### Setting up tmux file
  * Download the tmux.conf file and move to .tmux.conf
  * Clone the plugin manager with the command with the command:
@@ -48,4 +50,12 @@ curl --create-dirs -o ~/.config/up/up.sh https://raw.githubusercontent.com/shann
 ```
  cd ~/.vim/bundle/YouCompleteMe
  python3 install.py --all
+```
+ * To check if the copy to clipboard from vim is work run and check if return 1
+```
+ :echo has('clipboard') 
+```
+* If not try
+```
+ install the vim-gtk or vim-gtk3 package
 ```
