@@ -1,0 +1,79 @@
+# Add this to append to the history file, don't overwrite it
+shopt -s histappend
+
+# for setting history length see HISTSIZE and HISTFILESIZE in bash(1)
+HISTSIZE=10000
+HISTFILESIZE=10000
+
+# Vim bash mode
+bind -m vi-insert "\C-l":clear-screen
+bind -m vi-insert "\C-e":end-of-line
+bind -m vi-insert "\C-a":beginning-of-line
+set -o vi
+stty werase undef
+
+# Fix spelling on comands
+shopt -s cdspell
+
+export VISUAL=/usr/bin/vim
+export EDITOR="$VISUAL"
+
+# Function to quick list files and folders matching a pattern
+function lsg {
+  if [[ $# -ne 1 ]]; then
+    echo "Invalid number of argments, should be at least one"
+    return -1
+  fi
+
+  files=($(ls | grep $1))
+  if [[ ${#files[@]} -lt 1 ]]; then
+    echo "Pattern not found"
+    return -2
+  fi
+  
+  counter=1
+  for file in ${files[*]}; do
+    echo "$counter $file"
+    counter=$((counter+1))
+  done
+}
+
+# Function to quick go into folders
+function lcd {
+  if [[ $# -ne 1 ]]; then
+    echo "Invalid number of argments, should be at least one"
+    return -1
+  fi
+
+  files=($(ls | grep $1))
+  if [[ ${#files[@]} -lt 1 ]]; then
+    echo "Pattern not found"
+    return -2
+  fi
+  
+  counter=1
+  for file in ${files[*]}; do
+    echo "$counter $file"
+    counter=$((counter+1))
+  done
+  
+  if [[ ${#files[@]} -eq 1 ]]; then
+    echo "cd ${files[0]}"
+    cd ${files[0]}
+    return 0
+  fi
+
+  echo "Choose path: "
+  read number
+  number=$((number-1))
+  
+  echo "cd ${files[$number]}"
+  
+  cd ${files[$number]}
+}
+
+# Load history command from other session
+PROMPT_COMMAND='history -a'
+
+# Activate up script
+source ~/.config/up/up.sh

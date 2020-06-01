@@ -23,3 +23,13 @@
 ### Setting up gitconfig file
  * Download the gitconfig file and move to .gitconfig
  * Change the name and email
+
+### Setting up bash related files
+ * Download the files bash_aliases and bash_extends and copy to home adding the . at begining of the file name
+ * Adding "source .bash_extends" to .bashrc file 
+ * Run the commando to enable the up command
+```
+curl --create-dirs -o ~/.config/up/up.sh https://raw.githubusercontent.com/shannonmoeller/up/master/up.sh
+```
+
+
