@@ -19,4 +19,17 @@ alias meminfo='free -m -l -t -h'
 # Get server cpu info ##
 alias cpuinfo='lscpu'
 
+# Padtec usefull alias ##
+alias tb='topbuild'
+alias tbb='topbuild build'
+alias tbc='topbuild clean'
+alias tbi='topbuild install'
+alias tbf='topbuild fetch'
+alias tbt='topbuild toolchain'
+alias wkb='wk build'
+alias wki='wk install'
+alias wkr='wk removeall'
+alias wkc='wk clearall'
+alias padgrep='grep --exclude-dir={build,cmake,topbuild} --exclude={.*txt} -R'
+#alias cdp='cd <path to the working project>'
 
