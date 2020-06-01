@@ -26,10 +26,26 @@
 
 ### Setting up bash related files
  * Download the files bash_aliases and bash_extends and copy to home adding the . at begining of the file name
- * Adding "source .bash_extends" to .bashrc file 
+ * Adding "source .bash_extends" to .bashrc file
  * Run the commando to enable the up command
 ```
 curl --create-dirs -o ~/.config/up/up.sh https://raw.githubusercontent.com/shannonmoeller/up/master/up.sh
 ```
 
-
+### Setting up vim related files
+ * Download the files vimrc and cscope_maps.vim
+ * Move the vimrc to ~/.vimrc
+ * Move the cscope_maps.vim to ~/.vim/
+ * Open vim and install all the plugins with the command
+```
+:PluginInstall
+```
+ * To full enable the tags generate file run:
+```
+ sudo apt-get install exuberant-ctags
+```
+ * To full enable you complete me run:
+```
+ cd ~/.vim/bundle/YouCompleteMe
+ python3 install.py --all
+```

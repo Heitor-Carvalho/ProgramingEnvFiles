@@ -1,0 +1,233 @@
+"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+"                                                                              "
+"                       __   _ _ _ __ ___  _ __ ___                            "
+"                       \ \ / / | '_ ` _ \| '__/ __|                           "
+"                        \ V /| | | | | | | | | (__                            "
+"                         \_/ |_|_| |_| |_|_|  \___|                           "
+"                                                                              "
+"                                                                              "
+"++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+let $vundle="~/.vim/bundle/Vundle.vim"
+
+" Be improved
+set nocompatible
+
+" Enable filetype defection
+filetype on
+
+" Enable feature extension via plugins files
+filetype plugin on
+filetype indent on
+
+"=====================================================
+"" Vundle settings
+"=====================================================
+
+set rtp+=$vundle
+call vundle#begin()
+
+  Plugin 'VundleVim/Vundle.vim'                " Let Vundle manage Vundle, required
+
+  "-------------------=== Code/Project navigation ===-------------------
+  Plugin 'scrooloose/nerdtree'                 " Project and file navigation
+  Plugin 'kien/ctrlp.vim'                      " Open file with fuzze search
+
+  "-------------------=== Git ===---------------------------------------
+  Plugin 'tpope/vim-fugitive'                  " Integration Git and Vim 
+  Plugin 'junegunn/gv.vim'
+
+  "--------------------=== ctags ===------------------------------------
+  Plugin 'majutsushi/tagbar'                   " Open a lateral bar resuming file variables and functions
+  Plugin 'szw/vim-tags'                        " Generate ctags file using all files under the current
+
+  ""-------------------=== syntax checker ===---------------------------
+  Plugin 'vim-syntastic/syntastic'             " Syntax checker plugin
+
+  ""-------------------=== appearance ===--------------------------------
+  Plugin 'bling/vim-airline'                   " Lean & mean status/tabline for vim
+  Plugin 'vim-airline/vim-airline-themes'      " Themes for airline
+  Plugin 'Lokaltog/powerline'                  " Powerline fonts plugin 
+  Plugin 'flazz/vim-colorschemes'              " Color schemes colection to select from
+
+  ""-------------------=== other ===------------------------------------
+  Plugin 'machakann/vim-sandwich'              " Quick insertion of parentheses, brackets, quotes and more
+  Plugin 'yegappan/mru'                        " Manage recent used files
+  Plugin 'tpope/vim-repeat'                    " Repeat command from plugins mapping with .
+  Plugin 'sjl/gundo.vim'                       " Undo edits tree
+  Plugin 'markonm/traces.vim'                  " Show live representation of replace commands
+  Plugin 'junegunn/vim-easy-align'             " Easier code alignment
+  Plugin 'Valloric/YouCompleteMe'              " Autocomplete with steroids
+
+  ""----------------------=== C++ ===--------------------------------
+  Plugin 'SirVer/ultisnips'                    " Code snippets
+  Plugin 'honza/vim-snippets'                  " Snipptes definition files
+
+  ""-------------------=== Python ===--------------------------------
+  Plugin 'davidhalter/jedi-vim'                " Autocomplete focusing on python
+
+call vundle#end()                              " required
+"
+"" --------------------=== Environment configurations ===------------
+
+"" ===> Set commands
+set relativenumber
+set number
+set splitbelow
+set splitright
+set tabstop=2
+set shiftwidth=2
+set softtabstop=2
+set smarttab
+set expandtab
+set visualbell
+set autoindent
+set hlsearch
+set scrolloff=20
+set completeopt=menu,preview
+set cursorline
+set noswapfile
+set spelllang=en
+"set spell
+set path+=**
+set wildmode=longest,list:longest
+set wildignore+=**/build/**
+set wildignore+=**/scripts/**
+set wildignore+=**/cmake/**
+set wildignore+=**/trd/**
+set wildignore+=**/bsp/**
+set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<
+set list
+set undofile "Persistent undo
+set clipboard=unnamedplus "Copy to clipboard
+
+"" ===> Color related commands
+" highlight search configuration
+hi Search ctermbg=LightYellow
+hi Search ctermfg=Red
+" configure vimdiff colors
+highlight DiffAdd cterm=none ctermfg=green ctermbg=black
+highlight DiffDelete cterm=none ctermfg=red ctermbg=black
+highlight DiffChange cterm=none ctermfg=none ctermbg=black
+highlight DiffText cterm=none ctermfg=Yellow ctermbg=black
+"  tagbar configuration
+highlight TagbarSignature guifg=Green ctermfg=Green
+" match pattern color
+highlight MatchParen ctermfg=blue
+
+"" ===> Movements related commands
+" change move panes mapping
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+" don't loose selection when indent"
+xnoremap <  <gv
+xnoremap >  >gv
+
+syntax on
+colorscheme gotham256
+
+"" ===> Custum shortcuts
+" configure C-z to open file related from tag
+map <C-z> :vsp <CR>:exec("tag ".expand("<cword>"))<CR>
+map <C-@>z :sp <CR>:exec("tag ".expand("<cword>"))<CR>
+" shortcuts for NERDTree
+nnoremap <F2> :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
+" search term all files
+map <F4> [I:let nr = input("Which one: ")<Bar>exe "normal " . nr ."[\t"<CR>
+" enable paste mode (allow ctrl-v past text keeping ident)
+set pastetoggle=<F5> 
+" open file in vertical split
+nnoremap <F3> :vertical wincmd f<CR>
+" show undo tree
+nnoremap <F6> :GundoToggle<CR>
+" go to the next and previous change in vimdiff
+nnoremap <expr> <silent> <F7>   (&diff ? "]c" : ":cnext\<CR>")
+nnoremap <expr> <silent> <S-F7> (&diff ? "[c" : ":cprev\<CR>")
+" open lateral tagbar
+nmap <F8> :TagbarToggle<CR>
+" easy align shortcut
+xmap ga <Plug>(EasyAlign)
+" easier key to enter the comand line
+nnoremap <Space> :
+
+" other tweaks
+nnoremap <esc><esc> :noh<return>
+nnoremap space i<space><esc>
+nnoremap - 5<c-w>-
+nnoremap + 5<c-w>+ 
+nnoremap - $
+nnoremap [l :lprevious<CR>
+nnoremap ]l :lnext<CR>
+nnoremap [L :lfirst<CR>
+nnoremap ]L :llast<CR>
+nnoremap [q :cp<CR>
+nnoremap ]q :cn<CR>
+nnoremap [Q :cfirst<CR>
+nnoremap ]Q :clast<CR>
+inoremap jj <Esc>
+
+"" ===> Plugins configurations
+" scrooloose/nerdtree configuration
+let NERDTreeMinimalUI = 1
+let NERDTreeDirArrows = 1
+let NERDTreeWinSize = 50
+
+" kien/ctrlp.vim configuration
+let g:ctrlp_working_path_mode = 0
+let g:ctrlp_max_files=0
+let g:ctrlp_max_depth=20
+let g:ctrlp_custom_ignore = 'build\|dist'
+
+" majutsushi/tagbar configuration
+let g:tagbar_width=60
+
+" szw/vim-tags configuration
+let g:vim_tags_ignore_files = ['.gitignore', 'ignore']
+let g:vim_tags_auto_generate = 0
+
+" vim-syntastic/syntastic configuration
+let g:syntastic_check_on_open = 0
+let g:syntastic_check_on_wq = 0
+let g:syntastic_mode_map = { 'mode': 'passive'}
+let g:syntastic_always_populate_loc_list = 1
+
+" You complete me configuration
+let g:ycm_autoclose_preview_window_after_completion=1
+let g:ycm_autoclose_preview_window_after_insertion = 1
+let g:ycm_autoclose_preview_window_after_completion = 1
+
+" sjl/gundo.vim configuration
+if has('python3')
+    let g:gundo_prefer_python3 = 1
+endif
+if !isdirectory($HOME."/.vim/undodir")
+   call mkdir($HOME."/.vim/undodir", "p")
+endif
+set undodir=$HOME."/.vim/undodir"
+
+" Valloric/YouCompleteMe configuration
+let g:ycm_key_list_select_completion   = ['<C-j>', '<C-n>', '<Down>']
+let g:ycm_key_list_previous_completion = ['<C-k>', '<C-p>', '<Up>']
+let g:ycm_show_diagnostics_ui = 1
+let g:ycm_enable_diagnostic_signs = 0 
+let g:ycm_enable_diagnostic_highlighting = 0
+
+" SirVer/ultisnips configuration
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<s-tab>"
+
+" davidhalter/jedi-vim configuration
+let g:jedi#popup_on_dot = 1
+let g:jedi#show_call_signatures = "1"
+
+" python specific make
+set makeprg=python
+set colorcolumn=120
+let python_highlight_all=1
+
+" source vim cscope maps
+source ~/.vim/cscope_maps.vim
