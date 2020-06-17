@@ -44,6 +44,13 @@ def find_so_files(search_path, target):
         if sh_file.find(target) != -1:
             return sh_file
 
+    # try in dist directory
+    dist_search_path = search_path.rsplit('/', 1)[0] + '/dist'
+    shared_files = glob.glob(dist_search_path + '/**/**/*so')
+    for sh_file in shared_files:
+        if sh_file.find(target) != -1:
+            return sh_file
+
     return None
 
 def find_bin_files(search_path, target):
