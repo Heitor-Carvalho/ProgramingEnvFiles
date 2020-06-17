@@ -72,6 +72,37 @@ function lcd {
   cd ${files[$number]}
 }
 
+# Function to quick copy filter folder name
+function lsc {
+  if [[ $# -ne 1 ]]; then
+    echo "Invalid number of argments, should be at least one"
+    return -1
+  fi
+
+  files=($(ls | grep $1))
+  if [[ ${#files[@]} -lt 1 ]]; then
+    echo "Pattern not found"
+    return -2
+  fi
+
+  counter=1
+  for file in ${files[*]}; do
+    echo "$counter $file"
+    counter=$((counter+1))
+  done
+
+  if [[ ${#files[@]} -eq 1 ]]; then
+    echo "${files[0]}" | xclip -sel clip
+    return 0
+  fi
+
+  echo "Choose path: "
+  read number
+  number=$((number-1))
+
+  echo "${files[$number]}" | xclip -sel clip
+}
+
 # Load history command from other session
 PROMPT_COMMAND='history -a'
 
