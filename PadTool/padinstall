@@ -152,6 +152,22 @@ def clearall(build_args):
         command = 'topbuild clean {}'.format(working_file.strip())
         run_command(command)
 
+# Handle copy
+def copyfile(copy_args):
+    # Looking config file
+    if os.path.exists(copy_args.config_file) == True:
+        json_file = open('workingpath.config', 'r')
+        target_info = json.load(json_file)
+    else:
+        print("File {} Not Found".format(installproj_args.config_file))
+        sys.exit(-1)
+
+    target_path = '{}@{}:{}'.format(target_info['user'], target_info['ip'], '/home/')
+    rsync_command = 'rsync -avP -e \'ssh -p {}\' {} {}'.format(target_info['ssh_port'], copy_args.copyfile, target_path)
+    sshpass_command = 'sshpass -p "{}"'.format(target_info['password'])
+    command = "{} {}".format(sshpass_command, rsync_command)
+    run_command(command)
+
 def main():
     # Main options
     working_cmds = argparse.ArgumentParser(description='Helper command build/install the working repos')
@@ -184,6 +200,12 @@ def main():
     working_cmds_install.add_argument('--config_file', required=False, default='workingpath.config', dest='config_file', help='Basic configuration need to install on target')
     working_cmds_install.add_argument('--strip', '-s', action='store_true', help='Strib file before install')
     working_cmds_install.add_argument('--target', '-t', type=str, required=False, default='debug', dest='target', help='Build target')
+
+    # Sub option copyfile
+    working_cmds_copy = working_cmds_sub.add_parser('copy', help='Copy a file to the board')
+    working_cmds_copy.set_defaults(func=copyfile)
+    working_cmds_copy.add_argument('--cp', type=str, required=True, dest='copyfile', help='file to be copied')
+    working_cmds_copy.add_argument('--config_file', required=False, default='workingpath.config', dest='config_file', help='Basic configuration need to install on target')
 
     args = working_cmds.parse_args()
     args.func(args)
