@@ -168,6 +168,20 @@ def copyfile(copy_args):
     command = "{} {}".format(sshpass_command, rsync_command)
     run_command(command)
 
+# Handle fixssh
+def fixssh(fixssh_args):
+
+    # Looking config file
+    if os.path.exists(fixssh_args.config_file) == True:
+        json_file = open('workingpath.config', 'r')
+        target_info = json.load(json_file)
+    else:
+        print("File {} Not Found".format(fixssh_args.config_file))
+        sys.exit(-1)
+
+    sshpass_command = 'ssh-keyscan -p {} {} > $HOME/.ssh/known_hosts'.format(target_info['ssh_port'], target_info['ip'])
+    run_command(sshpass_command)
+
 def main():
     # Main options
     working_cmds = argparse.ArgumentParser(description='Helper command build/install the working repos')
@@ -206,6 +220,11 @@ def main():
     working_cmds_copy.set_defaults(func=copyfile)
     working_cmds_copy.add_argument('--cp', type=str, required=True, dest='copyfile', help='file to be copied')
     working_cmds_copy.add_argument('--config_file', required=False, default='workingpath.config', dest='config_file', help='Basic configuration need to install on target')
+
+    # Sub option fixsshkey
+    working_cmds_fixssh = working_cmds_sub.add_parser('fixssh', help='Fix sshkey when it changes')
+    working_cmds_fixssh.set_defaults(func=fixssh)
+    working_cmds_fixssh.add_argument('--config_file', required=False, default='workingpath.config', dest='config_file', help='Basic configuration need to install on target')
 
     args = working_cmds.parse_args()
     args.func(args)
