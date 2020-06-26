@@ -159,7 +159,7 @@ def copyfile(copy_args):
         json_file = open('workingpath.config', 'r')
         target_info = json.load(json_file)
     else:
-        print("File {} Not Found".format(installproj_args.config_file))
+        print("File {} Not Found".format(copy_args.config_file))
         sys.exit(-1)
 
     target_path = '{}@{}:{}'.format(target_info['user'], target_info['ip'], '/home/')
