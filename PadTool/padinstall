@@ -22,6 +22,20 @@ def get_working_files(wr_path):
     valid_working_files = [wfile for wfile in working_files if wfile[0] != '#']
     return valid_working_files
 
+def get_target_info(config_file):
+    # Looking config file
+    if os.path.exists(config_file) == True:
+        try:
+            json_file = open(config_file, 'r')
+            target_info = json.load(json_file)
+        except:
+            print("File {} Not Found".format(config_file))
+            sys.exit(-1)
+    else:
+        sys.exit(-1)
+
+    return target_info
+
 def run_build(working_files, target):
     for working_file in working_files:
         if target == 'all':
@@ -73,16 +87,7 @@ def build(build_args):
 def install(install_args):
     working_files = get_working_files(install_args.wr)
 
-    # Looking config file
-    if os.path.exists(install_args.config_file) == True:
-        try:
-            json_file = open('workingpath.config', 'r')
-            target_info = json.load(json_file)
-        except:
-            print("File {} Not Found".format(install_args.config_file))
-            sys.exit(-1)
-    else:
-        sys.exit(-1)
+    target_info = get_target_info(install_args.config_file)
 
     sshpass_command = 'sshpass -p "{}"'.format(target_info['password'])
 
@@ -125,13 +130,7 @@ def install(install_args):
 # Handle installproj
 def installproj(installproj_args):
 
-    # Looking config file
-    if os.path.exists(installproj_args.config_file) == True:
-        json_file = open('workingpath.config', 'r')
-        target_info = json.load(json_file)
-    else:
-        print("File {} Not Found".format(installproj_args.config_file))
-        sys.exit(-1)
+    target_info = get_target_info(installproj_args.config_file)
 
     command = 'rm -rf {}/proj_install'.format(target_info['project_path'])
     run_command(command)
@@ -145,22 +144,17 @@ def installproj(installproj_args):
     run_command(rsync_command)
 
 # Handle clearall
-def clearall(build_args):
+def clearall(clearall_args):
 
-    working_files = get_working_files(build_args.wr)
+    working_files = get_working_files(clearall_args.wr)
     for working_file in working_files:
         command = 'topbuild clean {}'.format(working_file.strip())
         run_command(command)
 
 # Handle copy
 def copyfile(copy_args):
-    # Looking config file
-    if os.path.exists(copy_args.config_file) == True:
-        json_file = open('workingpath.config', 'r')
-        target_info = json.load(json_file)
-    else:
-        print("File {} Not Found".format(copy_args.config_file))
-        sys.exit(-1)
+
+    target_info = get_target_info(copy_args.config_file)
 
     target_path = '{}@{}:{}'.format(target_info['user'], target_info['ip'], '/home/')
     rsync_command = 'rsync -avP -e \'ssh -p {}\' {} {}'.format(target_info['ssh_port'], copy_args.copyfile, target_path)
@@ -171,14 +165,7 @@ def copyfile(copy_args):
 # Handle fixssh
 def fixssh(fixssh_args):
 
-    # Looking config file
-    if os.path.exists(fixssh_args.config_file) == True:
-        json_file = open('workingpath.config', 'r')
-        target_info = json.load(json_file)
-    else:
-        print("File {} Not Found".format(fixssh_args.config_file))
-        sys.exit(-1)
-
+    target_info = get_target_info(fixssh_args.config_file)
     sshpass_command = 'ssh-keyscan -p {} {} > $HOME/.ssh/known_hosts'.format(target_info['ssh_port'], target_info['ip'])
     run_command(sshpass_command)
 
@@ -189,29 +176,33 @@ def main():
     # Sub options
     working_cmds_sub = working_cmds.add_subparsers()
 
+    home_dir = os.getenv("HOME")
+    workingpathconfig = home_dir + "/.padtools/workingpath.config"
+    workingrepo = home_dir + "/.padtools/workingrepos"
+
     # Sub option build
     working_cmds_build = working_cmds_sub.add_parser('build', help='Build working repos')
     working_cmds_build.set_defaults(func=build)
-    working_cmds_build.add_argument('--wr', type=str, required=False, default='workingrepos', dest='wr', help='working repos file')
+    working_cmds_build.add_argument('--wr', type=str, required=False, default=workingrepo, dest='wr', help='working repos file')
     working_cmds_build.add_argument('--target', '-t', type=str, required=False, default='shared-debug', dest='target', help='Build target')
     working_cmds_build.add_argument('--forced', '-f', action='store_true', help='Force project to rebuild')
 
     # Sub option clearall
     working_cmds_clearall = working_cmds_sub.add_parser('clearall', help='Clear all copied file in the target')
     working_cmds_clearall.set_defaults(func=clearall)
-    working_cmds_clearall.add_argument('--wr', type=str, required=False, default='workingrepos', dest='wr', help='working repos file')
-    working_cmds_clearall.add_argument('--config_file', required=False, default='workingpath.config', dest='config_file', help='Basic configuration need to install on target')
+    working_cmds_clearall.add_argument('--wr', type=str, required=False, default=workingrepo, dest='wr', help='working repos file')
+    working_cmds_clearall.add_argument('--config_file', required=False, default=workingpathconfig, dest='config_file', help='Basic configuration need to install on target')
 
     # Sub option installproj
     working_cmds_installproj = working_cmds_sub.add_parser('installproj', help='Install all project files')
     working_cmds_installproj.set_defaults(func=installproj)
-    working_cmds_installproj.add_argument('--config_file', required=False, default='workingpath.config', dest='config_file', help='Basic configuration need to install on target')
+    working_cmds_installproj.add_argument('--config_file', required=False, default=workingpathconfig, dest='config_file', help='Basic configuration need to install on target')
 
     # Sub option install
     working_cmds_install = working_cmds_sub.add_parser('install', help='Install working repos')
     working_cmds_install.set_defaults(func=install)
-    working_cmds_install.add_argument('--wr', type=str, required=False, default='workingrepos', dest='wr', help='working repos file')
-    working_cmds_install.add_argument('--config_file', required=False, default='workingpath.config', dest='config_file', help='Basic configuration need to install on target')
+    working_cmds_install.add_argument('--wr', type=str, required=False, default=workingrepo, dest='wr', help='working repos file')
+    working_cmds_install.add_argument('--config_file', required=False, default=workingpathconfig, dest='config_file', help='Basic configuration need to install on target')
     working_cmds_install.add_argument('--strip', '-s', action='store_true', help='Strib file before install')
     working_cmds_install.add_argument('--target', '-t', type=str, required=False, default='debug', dest='target', help='Build target')
 
@@ -219,12 +210,12 @@ def main():
     working_cmds_copy = working_cmds_sub.add_parser('copy', help='Copy a file to the board')
     working_cmds_copy.set_defaults(func=copyfile)
     working_cmds_copy.add_argument('--cp', type=str, required=True, dest='copyfile', help='file to be copied')
-    working_cmds_copy.add_argument('--config_file', required=False, default='workingpath.config', dest='config_file', help='Basic configuration need to install on target')
+    working_cmds_copy.add_argument('--config_file', required=False, default=workingpathconfig, dest='config_file', help='Basic configuration need to install on target')
 
     # Sub option fixsshkey
     working_cmds_fixssh = working_cmds_sub.add_parser('fixssh', help='Fix sshkey when it changes')
     working_cmds_fixssh.set_defaults(func=fixssh)
-    working_cmds_fixssh.add_argument('--config_file', required=False, default='workingpath.config', dest='config_file', help='Basic configuration need to install on target')
+    working_cmds_fixssh.add_argument('--config_file', required=False, default=workingpathconfig, dest='config_file', help='Basic configuration need to install on target')
 
     args = working_cmds.parse_args()
     args.func(args)
