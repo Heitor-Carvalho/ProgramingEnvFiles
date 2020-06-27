@@ -1,0 +1,32 @@
+#!/bin/bash
+# This script is used to generate the tag files used with ctags
+
+CSCOPE_DIR="$PWD/cscope"
+
+if [ ! -d "$CSCOPE_DIR" ]; then
+  mkdir "$CSCOPE_DIR"
+fi
+
+echo "Finding files for which tags will be generated ..."
+find "$PWD" \
+-name '*.cpp' \
+-o -name '*.py' \
+-o -name '*.c' \
+-o -name '*.cc' \
+-o -name '*.hpp' \
+-o -name '*.h' > "$CSCOPE_DIR/cscope_all.files"
+
+if [ "$1" == "--all" ]; then
+  cat "$CSCOPE_DIR/cscope_all.files" > "$CSCOPE_DIR/cscope.files" 
+else
+  cat "$CSCOPE_DIR/cscope_all.files" | grep -Pv "\/repos\/trd|.*\/build\/.*|.*\/bsp\/.*" > "$CSCOPE_DIR/cscope.files" 
+fi
+
+echo "Adding files to cscope db: $PWD/cscope.db ..."
+cscope -b -i "$CSCOPE_DIR/cscope.files"
+
+export CSCOPE_DB="$PWD/cscope.out"
+echo "Exported CSCOPE_DB to: '$CSCOPE_DB'"
+
+echo "Generating ctags"
+ctags --sort=foldcase -L cscope/cscope.files
