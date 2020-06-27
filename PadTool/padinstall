@@ -156,7 +156,7 @@ def copyfile(copy_args):
 
     target_info = get_target_info(copy_args.config_file)
 
-    target_path = '{}@{}:{}'.format(target_info['user'], target_info['ip'], '/home/')
+    target_path = '{}@{}:{}'.format(target_info['user'], target_info['ip'], copy_args.target_path)
     rsync_command = 'rsync -avP -e \'ssh -p {}\' {} {}'.format(target_info['ssh_port'], copy_args.copyfile, target_path)
     sshpass_command = 'sshpass -p "{}"'.format(target_info['password'])
     command = "{} {}".format(sshpass_command, rsync_command)
@@ -211,6 +211,7 @@ def main():
     working_cmds_copy.set_defaults(func=copyfile)
     working_cmds_copy.add_argument('--cp', type=str, required=True, dest='copyfile', help='file to be copied')
     working_cmds_copy.add_argument('--config_file', required=False, default=workingpathconfig, dest='config_file', help='Basic configuration need to install on target')
+    working_cmds_copy.add_argument('--target_path', '-tp', required=False, default='/home/', dest='target_path', help='Path to copy the file in the target')
 
     # Sub option fixsshkey
     working_cmds_fixssh = working_cmds_sub.add_parser('fixssh', help='Fix sshkey when it changes')
