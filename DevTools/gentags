@@ -1,0 +1,103 @@
+#!/usr/bin/env python
+import os
+import argparse
+import fnmatch
+import re
+import subprocess
+import sys
+from glob import glob
+
+
+
+def recursive_glob(rootdir='.', pattern='*'):
+    matches = []
+
+    for root, dirnames, filenames in os.walk(rootdir):
+        for filename in fnmatch.filter(filenames, pattern):
+            matches.append(os.path.join(root, filename))
+
+    return matches
+
+def filter_repo_list(repo_list, patterns):
+    filtered_repo_list = []
+
+    for regex_pattern in patterns:
+         regex = re.compile(regex_pattern)
+         filtered_repo_list += list(filter(regex.search, repo_list))
+
+    return filtered_repo_list
+
+def getting_repo_files(repos, patterns):
+    repo_files = []
+
+    for repo in repos:
+        for regex_pattern in patterns:
+            repo_files += recursive_glob(repo, regex_pattern)
+
+    return repo_files
+
+def filter_repo_files(repo_files, patterns):
+
+    exclude_repo_files = []
+    for regex_pattern in patterns:
+         regex = re.compile(regex_pattern)
+         exclude_repo_files += filter(regex.search, repo_files)
+
+    return list(set(repo_files) - set(exclude_repo_files))
+
+def run_command(command):
+    print("Running command: {}".format(command))
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+    while True:
+        nextline = process.stdout.readline()
+        if nextline == '' and process.poll() is not None:
+            break
+        sys.stdout.write(nextline)
+        sys.stdout.flush()
+
+def gentags(gentags):
+
+    print("Getting repo list")
+    repo_list = glob('./*/')
+    print("Filtering repo list")
+    filtered_repo_list = filter_repo_list(repo_list, gentags.repo_filter)
+    print("Filtering files")
+    repo_files = getting_repo_files(filtered_repo_list, gentags.files_filter)
+    repo_files = filter_repo_files(repo_files, gentags.files_filter_exclude)
+
+    print("Generating file list")
+    fd = open("ctagsfiles", 'w')
+    fd.seek(0)
+    for repo_file in repo_files:
+        fd.write(repo_file)
+        fd.write("\n")
+    fd.close()
+
+    print("Generating ctags and cscope files")
+    run_command("cscope -b -i ./ctagsfiles")
+    run_command("ctags --sort=foldcase -L ./ctagsfiles")
+    run_command("rm ctagsfiles")
+    os.putenv("CSCOPE_DB", os.getcwd() + "/ctagsfile")
+    os.system('bash')
+
+def main():
+    # Main options
+    gentags_cmds = argparse.ArgumentParser(description='Helper script to generate ctags file')
+
+    default_include_repo  = ['pad']
+    default_include_files = ['*.cpp', '*.py', '*.c', '*.cc', '*.hpp', '*.h']
+    default_exclude       = ['build']
+
+    gentags_cmds.add_argument('--repo_filter', type=str, nargs='+', required=False, default=default_include_repo, dest="repo_filter", help='Search files only in the repo matching the pattern')
+    gentags_cmds.add_argument('--files_filter', type=str, nargs='+', required=False, default=default_include_files, dest="files_filter", help='Filter files matching the pattern')
+    gentags_cmds.add_argument('--files_exclude_filter', type=str, nargs='+', required=False, default=default_exclude, dest='files_filter_exclude', help='Exclude file matching this pattern')
+
+    gentags_cmds.set_defaults(func=gentags)
+    args = gentags_cmds.parse_args()
+    args.func(args)
+
+
+if __name__ == '__main__':
+    main()
+
+
