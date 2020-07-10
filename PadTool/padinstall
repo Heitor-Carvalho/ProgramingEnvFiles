@@ -99,8 +99,8 @@ def install(install_args):
         if shared_file is None:
             bin_file = find_bin_files(base_search_path, install_args.target)
             if bin_file is None:
-                print("Non shared library or binary file founded for {}".format(working_file))
-                sys.exit(-1)
+                print("No shared library or binary file founded for {}".format(working_file))
+                continue
             else:
                 copy_file = bin_file
                 file_type = 'bin_file'
