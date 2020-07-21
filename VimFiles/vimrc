@@ -178,6 +178,8 @@ let g:vim_tags_auto_generate = 0
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_mode_map = { 'mode': 'passive'}
+let g:syntastic_python_checkers = ['pylint']
+let g:syntastic_cpp_checkers = ['cpplint']
 let g:syntastic_always_populate_loc_list = 1
 
 " You complete me configuration
@@ -197,7 +199,7 @@ set undodir=$HOME."/.vim/undodir"
 " Valloric/YouCompleteMe configuration
 let g:ycm_key_list_select_completion   = ['<C-j>', '<C-n>', '<Down>']
 let g:ycm_key_list_previous_completion = ['<C-k>', '<C-p>', '<Up>']
-let g:ycm_show_diagnostics_ui = 1
+let g:ycm_show_diagnostics_ui = 0
 let g:ycm_enable_diagnostic_signs = 0 
 let g:ycm_enable_diagnostic_highlighting = 0
 
