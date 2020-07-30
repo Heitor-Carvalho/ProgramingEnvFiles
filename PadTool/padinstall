@@ -75,6 +75,15 @@ def find_bin_files(search_path, target):
 
     return None
 
+def get_copy_command(copy_type, ssh_port, copy_file, target_path):
+    if copy_type == "rsync":
+        return 'rsync -avP -e \'ssh -p {}\' {} {}'.format(ssh_port, copy_file, target_path)
+    elif copy_type == "scp":
+        return 'scp -P {} {} {}'.format(ssh_port, copy_file, target_path)
+    else:
+        print("Copy command not found")
+        return None
+
 # Handle build
 def build(build_args):
     working_files = get_working_files(build_args.wr)
@@ -123,8 +132,8 @@ def install(install_args):
             print("Non valid file_type found")
             sys.exit(-1)
 
-        rsync_command = 'rsync -avP -e \'ssh -p {}\' {} {}'.format(target_info['ssh_port'], copy_file, target_path)
-        command = "{} {}".format(sshpass_command, rsync_command)
+        copy_command = get_copy_command(target_info['copy_command'], target_info['ssh_port'], copy_file, target_path)
+        command = "{} {}".format(sshpass_command, copy_command)
         run_command(command)
 
 # Handle installproj
@@ -140,8 +149,9 @@ def installproj(installproj_args):
     run_command(command)
     copy_file = '{}/proj_install/opt/'.format(target_info['project_path'])
     target_path = '{}@{}:{}'.format(target_info['user'], target_info['ip'], '/opt/')
-    rsync_command = 'sshpass -p "{}" rsync -avP -e \'ssh -p {}\' {} {}'.format(target_info['password'], target_info['ssh_port'], copy_file, target_path)
-    run_command(rsync_command)
+    copy_command = get_copy_command(target_info['copy_command'], target_info['ssh_port'], copy_file, target_path)
+    copy_command = 'sshpass -p "{}" '.format(target_info['password']) + copy_command
+    run_command(copy_command)
 
 # Handle clearall
 def clearall(clearall_args):
@@ -157,9 +167,9 @@ def copyfile(copy_args):
     target_info = get_target_info(copy_args.config_file)
 
     target_path = '{}@{}:{}'.format(target_info['user'], target_info['ip'], copy_args.target_path)
-    rsync_command = 'rsync -avP -e \'ssh -p {}\' {} {}'.format(target_info['ssh_port'], copy_args.copyfile, target_path)
+    copy_command = get_copy_command(target_info['copy_command'], target_info['ssh_port'], copy_args.copyfile, target_path)
     sshpass_command = 'sshpass -p "{}"'.format(target_info['password'])
-    command = "{} {}".format(sshpass_command, rsync_command)
+    command = "{} {}".format(sshpass_command, copy_command)
     run_command(command)
 
 # Handle fixssh
