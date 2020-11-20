@@ -17,6 +17,15 @@ def run_command(command):
         sys.stdout.write(nextline)
         sys.stdout.flush()
 
+def run_ans_command(command):
+    process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
+    return process.stdout.readlines()
+
+def get_currnet_toolchain():
+    cmd_ans = run_ans_command("topbuild toolchain")
+    toolchain_line = [cmd for cmd in cmd_ans if cmd[0] == ">"]
+    return toolchain_line[0].strip()[2:]
+
 def get_working_files(wr_path):
     working_files       = open(wr_path, 'r').readlines()
     valid_working_files = [wfile for wfile in working_files if wfile[0] != '#']
@@ -64,7 +73,6 @@ def find_so_files(search_path, target):
     for sh_file in shared_files:
         if sh_file.find(target) != -1:
             return sh_file
-
     return None
 
 def find_bin_files(search_path, target):
@@ -79,7 +87,7 @@ def get_copy_command(copy_type, ssh_port, copy_file, target_path):
     if copy_type == "rsync":
         return 'rsync -avP -e \'ssh -p {}\' {} {}'.format(ssh_port, copy_file, target_path)
     elif copy_type == "scp":
-        return 'scp -P {} {} {}'.format(ssh_port, copy_file, target_path)
+        return 'scp -P {} -r {} {}'.format(ssh_port, copy_file, target_path)
     else:
         print("Copy command not found")
         return None
@@ -179,6 +187,55 @@ def fixssh(fixssh_args):
     sshpass_command = 'ssh-keyscan -p {} {} > $HOME/.ssh/known_hosts'.format(target_info['ssh_port'], target_info['ip'])
     run_command(sshpass_command)
 
+# Handle creaprojfiles
+def createprojfiles(createprojfiles_args):
+    working_path = os.getcwd()
+    toolchain = "/" + get_currnet_toolchain() + "/"
+    workingpathconfig_templace = {\
+      "ip":           "",\
+      "ssh_port":     "",\
+      "user":         "",\
+      "password":     "",\
+      "shared_path":  "",\
+      "bin_path":     "",\
+      "project_path": working_path,\
+      "toolchain": toolchain,\
+      "strip_tool": "",\
+      "copy_command": "rsync"\
+    }
+
+    working_path_name = "workingpath.config"
+    with open(working_path_name, 'w') as fd:
+      json.dump(workingpathconfig_templace, fd, indent=4)
+
+    working_repo_name = "workingrepos"
+    command = "touch {}".format(working_path + '/' + working_repo_name)
+    run_command(command)
+
+# Handle fixconfigpath
+def fixconfigpath(fixconfigpath_args):
+    config_file = get_target_info(fixconfigpath_args.config_file)
+    working_path = os.getcwd()
+    toolchain = "/" + get_currnet_toolchain() + "/"
+    config_file["project_path"] = working_path
+    config_file["toolchain"] = toolchain
+
+    working_path_name = "workingpath.config"
+    with open(working_path_name, 'w') as fd:
+      json.dump(config_file, fd, indent=4)
+
+
+    padfolder = os.environ['HOME'] + "/.padtools"
+    if os.path.exists(padfolder) == False:
+        command = 'mkdir ' + padfolder
+        run_command(command)
+
+    symlink_cmd = "ln -s {}/workingrepos {}/workingrepos".format(working_path, padfolder)
+    run_command(symlink_cmd)
+    symlink_cmd = "ln -s {}/workingpath.config {}/workingpath.config".format(working_path, padfolder)
+    run_command(symlink_cmd)
+
+
 def main():
     # Main options
     working_cmds = argparse.ArgumentParser(description='Helper command build/install the working repos')
@@ -227,6 +284,15 @@ def main():
     working_cmds_fixssh = working_cmds_sub.add_parser('fixssh', help='Fix sshkey when it changes')
     working_cmds_fixssh.set_defaults(func=fixssh)
     working_cmds_fixssh.add_argument('--config_file', required=False, default=workingpathconfig, dest='config_file', help='Basic configuration need to install on target')
+
+    # Sub option create config file config
+    working_cmds_createwkfile = working_cmds_sub.add_parser('create', help='Create need files to padtools to work')
+    working_cmds_createwkfile.set_defaults(func=createprojfiles)
+
+    # Sub option fix config path
+    working_cmds_fixconfigpath = working_cmds_sub.add_parser('fixconfig', help='Fix config file to the currnet path')
+    working_cmds_fixconfigpath.set_defaults(func=fixconfigpath)
+    working_cmds_fixconfigpath.add_argument('--config_file', required=True, dest='config_file', help='Update path of current config file')
 
     args = working_cmds.parse_args()
     args.func(args)
