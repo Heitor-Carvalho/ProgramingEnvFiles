@@ -44,9 +44,9 @@
   inout = !git in && git out
   sh-unapply = !git stash show -p | git apply -R
   stash-unapply = !git stash show -p | git apply -R
-  jf = !git jfr
   diffv = difftool -t vimdiff
   diffm = difftool -t meld
+  diffno = diff --name-only HEAD~1
 [core]
 	editor = vim
 [merge]
