@@ -1,0 +1,9 @@
+1 - Create folder for git template
+# mkdir ~/.git_templates
+# cd .git_templates
+# mkdir hooks
+
+2 - Enable git template
+# git config --global init.templatedir '~/.git-templates'
+
+3 - Copy gerrit commit hook
