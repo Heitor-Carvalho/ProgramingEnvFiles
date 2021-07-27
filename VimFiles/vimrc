@@ -100,6 +100,8 @@ set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<
 set list
 set undofile "Persistent undo
 set clipboard=unnamedplus "Copy to clipboard
+"Enable scroll
+set mouse=a
 
 "" ===> Movements related commands
 " change move panes mapping
@@ -180,6 +182,7 @@ let g:syntastic_check_on_wq = 0
 let g:syntastic_mode_map = { 'mode': 'passive'}
 let g:syntastic_python_checkers = ['pylint']
 let g:syntastic_cpp_checkers = ['cpplint']
+let g:syntastic_sh_checkers = ['shellcheck']
 let g:syntastic_always_populate_loc_list = 1
 
 " You complete me configuration
