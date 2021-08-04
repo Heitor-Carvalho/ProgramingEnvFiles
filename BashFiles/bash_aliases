@@ -32,6 +32,6 @@ alias wkp='padinstall installproj'
 alias wkc='padinstall clearall'
 alias wkcp='padinstall copy --cp'
 alias wkssh='padinstall fixssh'
-alias padgrep='grep --exclude-dir={build,cmake,topbuild} --exclude={.*txt} -R'
+alias padgrep='grep --exclude-dir={build,cmake,topbuild} --exclude={.*txt} -RI'
 #alias cdp='cd <path to the working project>'
 
