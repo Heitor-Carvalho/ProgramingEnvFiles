@@ -85,7 +85,7 @@ def find_bin_files(search_path, target):
 
 def get_copy_command(copy_type, ssh_port, copy_file, target_path):
     if copy_type == "rsync":
-        return 'rsync -avP -e \'ssh -p {}\' {} {}'.format(ssh_port, copy_file, target_path)
+        return 'rsync -zavP -e \'ssh -p {}\' {} {}'.format(ssh_port, copy_file, target_path)
     elif copy_type == "scp":
         return 'scp -P {} -r {} {}'.format(ssh_port, copy_file, target_path)
     else:
