@@ -38,9 +38,10 @@ def get_target_info(config_file):
             json_file = open(config_file, 'r')
             target_info = json.load(json_file)
         except:
-            print("File {} Not Found".format(config_file))
+            print("Invalid json format")
             sys.exit(-1)
     else:
+        print("File {} Not Found".format(config_file))
         sys.exit(-1)
 
     return target_info
