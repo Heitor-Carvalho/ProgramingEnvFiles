@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 import os
 import argparse
 import fnmatch
@@ -26,6 +26,15 @@ def filter_repo_list(repo_list, patterns):
          filtered_repo_list += list(filter(regex.search, repo_list))
 
     return filtered_repo_list
+
+def filter_repo_exculde_list(repo_list, patterns):
+    exclude_repo_list = []
+
+    for regex_pattern in patterns:
+         regex = re.compile(regex_pattern)
+         exclude_repo_list += list(filter(regex.search, repo_list))
+
+    return list(set(repo_list) - set(exclude_repo_list))
 
 def getting_repo_files(repos, patterns):
     repo_files = []
@@ -61,6 +70,9 @@ def gentags(gentags):
     repo_list = glob('./*/')
     print("Filtering repo list")
     filtered_repo_list = filter_repo_list(repo_list, gentags.repo_filter)
+    filtered_repo_list = filter_repo_exculde_list(filtered_repo_list, gentags.repo_exclude_filter)
+    for repo in filtered_repo_list:
+        print("Using repo " + repo)
     print("Filtering files")
     repo_files = getting_repo_files(filtered_repo_list, gentags.files_filter)
     repo_files = filter_repo_files(repo_files, gentags.files_filter_exclude)
@@ -85,10 +97,12 @@ def main():
     gentags_cmds = argparse.ArgumentParser(description='Helper script to generate ctags file')
 
     default_include_repo  = ['pad']
+    default_exclude_repo  = []
     default_include_files = ['*.cpp', '*.py', '*.c', '*.cc', '*.hpp', '*.h']
-    default_exclude       = ['build']
+    default_exclude       = []
 
     gentags_cmds.add_argument('--repo_filter', type=str, nargs='+', required=False, default=default_include_repo, dest="repo_filter", help='Search files only in the repo matching the pattern')
+    gentags_cmds.add_argument('--repo_exclude_filter', type=str, nargs='+', required=False, default=default_exclude_repo, dest="repo_exclude_filter", help='Exclude the repos matched fro, the search')
     gentags_cmds.add_argument('--files_filter', type=str, nargs='+', required=False, default=default_include_files, dest="files_filter", help='Filter files matching the pattern')
     gentags_cmds.add_argument('--files_exclude_filter', type=str, nargs='+', required=False, default=default_exclude, dest='files_filter_exclude', help='Exclude file matching this pattern')
 
