@@ -39,6 +39,8 @@ curl --create-dirs -o ~/.config/up/up.sh https://raw.githubusercontent.com/shann
  * Move the vimrc to ~/.vimrc
  * Move the cscope_maps.vim to ~/.vim/
  * Open vim and install all the plugins with the command
+ * Check if vim-gtk is installed
+ * Check if copy to clipboard is enabled, e.g. :echo has('clipboard')
 ```
 :PluginInstall
 ```
