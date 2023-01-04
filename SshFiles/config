@@ -1,0 +1,3 @@
+Host <ip>.*
+  StrictHostKeyChecking no
+  UserKnownHostsFile=/dev/null
