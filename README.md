@@ -29,10 +29,6 @@ This repo contains all my environment configuration files used to development.
 ### Setting up bash related files
  * Download the files bash_aliases and bash_extends and copy to home adding the . at begining of the file name
  * Adding "source .bash_extends" to .bashrc file
- * Run the commando to enable the up command
-```
-curl --create-dirs -o ~/.config/up/up.sh https://raw.githubusercontent.com/shannonmoeller/up/master/up.sh
-```
 
 ### Setting up vim related files
  * Download the files vimrc and cscope_maps.vim
