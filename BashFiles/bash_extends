@@ -18,10 +18,40 @@ shopt -s cdspell
 export VISUAL=/usr/bin/vim
 export EDITOR="$VISUAL"
 
+searched_file=""
+function search_file {
+  if [[ $# -ne 1 ]]; then
+    echo "Invalid number of arguments, should be at least one"
+    return -1
+  fi
+
+  files=($(ls | grep $1))
+  if [[ ${#files[@]} -lt 1 ]]; then
+    echo "Pattern not found"
+    return -2
+  fi
+  
+  counter=1
+  for file in ${files[*]}; do
+    echo "$counter $file"
+    counter=$((counter+1))
+  done
+
+  number=0
+  if [[ ${#files[@]} -ne 1 ]]; then
+    echo "Choose path: "
+    read number
+    number=$((number-1))
+  fi
+
+  searched_file="${files[$number]}"
+  return 0
+}
+
 # Function to quick list files and folders matching a pattern
 function lsg {
   if [[ $# -ne 1 ]]; then
-    echo "Invalid number of argments, should be at least one"
+    echo "Invalid number of arguments, should be at least one"
     return -1
   fi
 
@@ -40,71 +70,76 @@ function lsg {
 
 # Function to quick go into folders
 function lcd {
-  if [[ $# -ne 1 ]]; then
-    echo "Invalid number of argments, should be at least one"
-    return -1
-  fi
-
-  files=($(ls | grep $1))
-  if [[ ${#files[@]} -lt 1 ]]; then
-    echo "Pattern not found"
-    return -2
-  fi
-  
-  counter=1
-  for file in ${files[*]}; do
-    echo "$counter $file"
-    counter=$((counter+1))
-  done
-  
-  if [[ ${#files[@]} -eq 1 ]]; then
-    echo "cd ${files[0]}"
-    cd ${files[0]}
-    return 0
-  fi
-
-  echo "Choose path: "
-  read number
-  number=$((number-1))
-  
-  echo "cd ${files[$number]}"
-  
-  cd ${files[$number]}
+  search_file $1
+  echo "cd $searched_file"
+  cd $searched_file
 }
 
 # Function to quick copy filter folder name
 function lsc {
-  if [[ $# -ne 1 ]]; then
-    echo "Invalid number of argments, should be at least one"
-    return -1
+  search_file $1
+  echo "$searched_file" | xclip -sel clip
+}
+
+# Function to call bitbake on projects
+function bbb {
+  search_file $1
+  echo "bitbake $file"
+  bitbake ${files[$number]}
+}
+
+# Function to call bitbake do_compile
+function bbc {
+  search_file $1
+  echo "bitbake $file -c do_compile"
+  bitbake ${files[$number]} -c do_compile
+}
+
+# Function to call bitbake deploy
+function bbd {
+  search_file $1
+  echo "devtool deploy-target $searched_file $2"
+  devtool deploy-target $file $2
+}
+
+# Function to call deploy so from bitbake
+function bbdr {
+  search_file $1
+  files=`ls $searched_file/oe-workdir/image/usr/lib/lib$searched_file.so*`
+
+  if [ -z "$3" ]; then
+    ssh="rsync -avPx"
+  else
+    ssh="rsync -avPx -e 'ssh -p $3'"
   fi
 
-  files=($(ls | grep $1))
-  if [[ ${#files[@]} -lt 1 ]]; then
-    echo "Pattern not found"
-    return -2
-  fi
-
-  counter=1
-  for file in ${files[*]}; do
-    echo "$counter $file"
-    counter=$((counter+1))
+  for file in $files; do
+    cmd=$ssh" $file $2:/usr/lib/" 
+    echo $cmd
+    eval "$cmd"
   done
+}
 
-  if [[ ${#files[@]} -eq 1 ]]; then
-    echo "${files[0]}" | xclip -sel clip
-    return 0
+# Function to call deploy bin from bitbake
+function bbdrb {
+  search_file $1
+  files=`ls $searched_file/oe-workdir/image/usr/bin/*`
+
+  if [ -z "$3" ]; then
+    ssh="rsync -avPx"
+  else
+    ssh="rsync -avPx -e 'ssh -p $3'"
   fi
 
-  echo "Choose path: "
-  read number
-  number=$((number-1))
-
-  echo "${files[$number]}" | xclip -sel clip
+  for file in $files; do
+    cmd=$ssh" $file $2:/usr/bin" 
+    echo $cmd
+    eval "$cmd"
+  done
 }
 
 # Load history command from other session
 PROMPT_COMMAND='history -a'
 
-# Activate up script
-source ~/.config/up/up.sh
+# Smart cd
+eval "$(zoxide init bash)"
