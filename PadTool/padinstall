@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys
 import os
@@ -11,7 +11,7 @@ def run_command(command):
     print("Running command: {}".format(command))
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
     while True:
-        nextline = process.stdout.readline()
+        nextline = process.stdout.readline().decode("utf-8")
         if nextline == '' and process.poll() is not None:
             break
         sys.stdout.write(nextline)
@@ -19,7 +19,8 @@ def run_command(command):
 
 def run_ans_command(command):
     process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True)
-    return process.stdout.readlines()
+    lines = process.stdout.readlines()
+    return [line.decode("utf-8") for line in lines]
 
 def get_currnet_toolchain():
     cmd_ans = run_ans_command("topbuild toolchain")
@@ -38,10 +39,9 @@ def get_target_info(config_file):
             json_file = open(config_file, 'r')
             target_info = json.load(json_file)
         except:
-            print("Invalid json format")
+            print("File {} Not Found".format(config_file))
             sys.exit(-1)
     else:
-        print("File {} Not Found".format(config_file))
         sys.exit(-1)
 
     return target_info
@@ -212,6 +212,12 @@ def createprojfiles(createprojfiles_args):
     working_repo_name = "workingrepos"
     command = "touch {}".format(working_path + '/' + working_repo_name)
     run_command(command)
+    command = "mkdir -p $HOME/.padtools"
+    run_command(command)
+    command = f"ln -sf {working_path}/workingrepos  $HOME/.padtools/workingrepos"
+    run_command(command)
+    command = f"ln -sf {working_path}/workingpath.config  $HOME/.padtools/workingpath.config"
+    run_command(command)
 
 # Handle fixconfigpath
 def fixconfigpath(fixconfigpath_args):
@@ -231,6 +237,10 @@ def fixconfigpath(fixconfigpath_args):
         command = 'mkdir ' + padfolder
         run_command(command)
 
+    rm_symlink_cmd = "rm {}/workingrepos".format(padfolder)
+    run_command(rm_symlink_cmd)
+    rm_symlink_cmd = "rm {}/workingpath.config".format(padfolder)
+    run_command(rm_symlink_cmd)
     symlink_cmd = "ln -s {}/workingrepos {}/workingrepos".format(working_path, padfolder)
     run_command(symlink_cmd)
     symlink_cmd = "ln -s {}/workingpath.config {}/workingpath.config".format(working_path, padfolder)
