@@ -57,3 +57,7 @@ This repo contains all my environment configuration files used to development.
 ```
  install the vim-gtk or vim-gtk3 package
 ```
+
+### Setting up cool tools
+ * Install zoxide: https://github.com/ajeetdsouza/zoxide
+ * Install tldr: apt install tldr
