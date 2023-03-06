@@ -22,13 +22,13 @@ searched_file=""
 function search_file {
   if [[ $# -ne 1 ]]; then
     echo "Invalid number of arguments, should be at least one"
-    return -1
+    return 1
   fi
 
   files=($(ls | grep $1))
   if [[ ${#files[@]} -lt 1 ]]; then
     echo "Pattern not found"
-    return -2
+    return 2
   fi
   
   counter=1
@@ -71,6 +71,9 @@ function lsg {
 # Function to quick go into folders
 function lcd {
   search_file $1
+  if [[ $? -ne 0 ]]; then
+    return 0
+  fi
   echo "cd $searched_file"
   cd $searched_file
 }
@@ -78,6 +81,9 @@ function lcd {
 # Function to quick copy filter folder name
 function lsc {
   search_file $1
+  if [[ $? -ne 0 ]]; then
+    return 0
+  fi
   echo "$searched_file" | xclip -sel clip
 }
 
