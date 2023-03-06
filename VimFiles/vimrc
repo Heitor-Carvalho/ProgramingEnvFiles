@@ -32,6 +32,7 @@ call vundle#begin()
   "-------------------=== Code/Project navigation ===-------------------
   Plugin 'scrooloose/nerdtree'                 " Project and file navigation
   Plugin 'kien/ctrlp.vim'                      " Open file with fuzze search
+  Plugin 'kuznetsss/shswitch'                  " Switch between header and source code
 
   "-------------------=== Git ===---------------------------------------
   Plugin 'tpope/vim-fugitive'                  " Integration Git and Vim 
@@ -90,12 +91,11 @@ set noswapfile
 set spelllang=en
 "set spell
 set path+=**
-set wildmode=longest,list:longest
+set wildmode=longest,list:lastused
 set wildignore+=**/build/**
 set wildignore+=**/scripts/**
 set wildignore+=**/cmake/**
-set wildignore+=**/trd/**
-set wildignore+=**/bsp/**
+set wildignore+=**/oe-workdir/**
 set listchars=eol:¬,tab:>·,trail:~,extends:>,precedes:<
 set list
 set undofile "Persistent undo
@@ -128,7 +128,7 @@ map <F4> [I:let nr = input("Which one: ")<Bar>exe "normal " . nr ."[\t"<CR>
 " enable paste mode (allow ctrl-v past text keeping ident)
 set pastetoggle=<F5> 
 " open file in vertical split
-nnoremap <F3> :vertical wincmd f<CR>
+nnoremap <F3> :SHSwitch<CR>
 " show undo tree
 nnoremap <F6> :GundoToggle<CR>
 " go to the next and previous change in vimdiff
@@ -161,13 +161,17 @@ inoremap jj <Esc>
 " scrooloose/nerdtree configuration
 let NERDTreeMinimalUI = 1
 let NERDTreeDirArrows = 1
-let NERDTreeWinSize = 50
+let NERDTreeWinSize = 40
 
 " kien/ctrlp.vim configuration
 let g:ctrlp_working_path_mode = 0
 let g:ctrlp_max_files=0
 let g:ctrlp_max_depth=20
-let g:ctrlp_custom_ignore = {'dir': '\v(trd\.*|\.git|\.*bsp\.*|\.*build\.*)', 'file': '\v\.(txt|html|cmake)$'}
+"let g:ctrlp_custom_ignore = {'dir': '\v(trd\.*|\.git|\.*bsp\.*|\.*build\.*)', 'file': '\v\.(txt|html|cmake|out|bin|gnco|o|so)$'}
+let g:ctrlp_custom_ignore = {'dir': '\v(trd\.*|\.git|\.*bsp\.*)', 'file': '\v\.(txt|html|cmake|out|bin|gnco|o|so)$'}
+
+"kuznetsss/shswitch.vim configuration
+let g:shswitch_source_extensions = ['c', 'cpp', 'cc']
 
 " majutsushi/tagbar configuration
 let g:tagbar_width=60
