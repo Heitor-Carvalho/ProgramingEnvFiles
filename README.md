@@ -28,9 +28,16 @@ This repo contains all my environment configuration files used to development.
 
 ### Setting up bash related files
  * Download the files bash_aliases and bash_extends and copy to home adding the . at begining of the file name
- * Adding "source .bash_extends" to .bashrc file
+ * Add "source .bash_extends" to .bashrc file
+
+### Setting ssh files
+ * Copy the ssh file to ~/.ssh
+
+### Setting sysenv files
+ * Add the changes in sysctl.conf to the file /etc/sysctl.conf
 
 ### Setting up vim related files
+ * Set up Vundle: git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
  * Download the files vimrc and cscope_maps.vim
  * Move the vimrc to ~/.vimrc
  * Move the cscope_maps.vim to ~/.vim/
@@ -61,3 +68,4 @@ This repo contains all my environment configuration files used to development.
 ### Setting up cool tools
  * Install zoxide: https://github.com/ajeetdsouza/zoxide
  * Install tldr: apt install tldr
+ * Update tldr with: tldr -u
